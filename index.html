@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Định vị thiết bị</title>
+</head>
+<body>
+
+<h1>Định vị thiết bị di động</h1>
+<button onclick="getLocation()">Lấy vị trí hiện tại</button>
+
+<p id="location"></p>
+
+<script>
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition, showError);
+  } else {
+    document.getElementById("location").innerHTML = "Trình duyệt của bạn không hỗ trợ Geolocation.";
+  }
+}
+
+function showPosition(position) {
+  var latitude = position.coords.latitude;
+  var longitude = position.coords.longitude;
+  document.getElementById("location").innerHTML = "Vĩ độ: " + latitude + "<br>Kinh độ: " + longitude;
+}
+
+function showError(error) {
+  switch(error.code) {
+    case error.PERMISSION_DENIED:
+      document.getElementById("location").innerHTML = "Bạn đã từ chối quyền truy cập vị trí.";
+      break;
+    case error.POSITION_UNAVAILABLE:
+      document.getElementById("location").innerHTML = "Thông tin vị trí không khả dụng.";
+      break;
+    case error.TIMEOUT:
+      document.getElementById("location").innerHTML = "Yêu cầu vị trí bị hết thời gian.";
+      break;
+    case error.UNKNOWN_ERROR:
+      document.getElementById("location").innerHTML = "Lỗi không xác định.";
+      break;
+  }
+}
+</script>
+
+</body>
+</html>
