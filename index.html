@@ -37,12 +37,12 @@ function showPosition(position) {
 
 function sendCoordinates(coordinates) {
   var xhr = new XMLHttpRequest();
-  xhr.open("POST", "https://script.google.com/a/macros/student.tdtu.edu.vn/s/AKfycbwtRwLEo0aHIW2HrfkxDlBEzZV5UWVlTAxFEiKJw4Hb/dev", true); // Thay "YOUR_SCRIPT_URL" bằng URL của Google Apps Script của bạn
+  xhr.open("POST", "https://script.google.com/a/macros/student.tdtu.edu.vn/s/AKfycbwtRwLEo0aHIW2HrfkxDlBEzZV5UWVlTAxFEiKJw4Hb/dev", true);
 
-  // Thiết lập header để chỉ định loại nội dung
+  // Thiết lập header để gửi dữ liệu
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-  // Gửi tọa độ với định dạng "x, y"
+  // Gửi tọa độ với định dạng "coordinates=x, y"
   xhr.send("coordinates=" + encodeURIComponent(coordinates));
 
   xhr.onreadystatechange = function() {
