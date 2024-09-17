@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Định vị thiết bị</title>
+    <title>Điểm danh - Lấy tọa độ</title>
 </head>
 <body>
 
-<h1>Định vị thiết bị di động</h1>
+<h1>Lấy tọa độ</h1>
 <button onclick="getLocation()">Lấy vị trí hiện tại</button>
 
 <p id="location"></p>
@@ -37,9 +37,9 @@ function showPosition(position) {
 
 function sendCoordinates(coordinates) {
   var xhr = new XMLHttpRequest();
-  xhr.open("POST", "https://script.google.com/a/macros/student.tdtu.edu.vn/s/AKfycbwtRwLEo0aHIW2HrfkxDlBEzZV5UWVlTAxFEiKJw4Hb/dev", true);
+  xhr.open("POST", "https://script.google.com/macros/s/AKfycbzUgJUXsFpnPkyamerhITj_Prz0OpFu4tnnVfDneGoqvJbPHyJp9smnYXUPcAGyS2RU/exec", true); // Thay YOUR_SCRIPT_URL bằng URL của Google Apps Script mà bạn đã triển khai
 
-  // Thiết lập header để gửi dữ liệu
+  // Thiết lập header để chỉ định loại nội dung
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
   // Gửi tọa độ với định dạng "coordinates=x, y"
