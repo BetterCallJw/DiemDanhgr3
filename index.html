@@ -37,9 +37,9 @@ function showPosition(position) {
 
 function sendCoordinates(coordinates) {
   var xhr = new XMLHttpRequest();
-  xhr.open("POST", "https://script.google.com/macros/s/AKfycbwp8JNDaJ6GgGisegC_LyGAofoFJiGSvbRYqhDH9NE/dev", true); // Thay YOUR_SCRIPT_URL bằng URL của Google Apps Script mà bạn đã triển khai
+  xhr.open("POST", "https://script.google.com/macros/s/AKfycbwp8JNDaJ6GgGisegC_LyGAofoFJiGSvbRYqhDH9NE/dev", true); // Thay YOUR_SCRIPT_URL bằng URL của Google Apps Script của bạn
 
-  // Thiết lập header để chỉ định loại nội dung
+  // Thiết lập header để gửi dữ liệu dưới dạng URL-encoded
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
   // Gửi tọa độ với định dạng "coordinates=x, y"
