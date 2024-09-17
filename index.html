@@ -24,7 +24,34 @@ function getLocation() {
 function showPosition(position) {
   var latitude = position.coords.latitude;
   var longitude = position.coords.longitude;
+  
+  // Hiển thị tọa độ trên trang web
   document.getElementById("location").innerHTML = "Vĩ độ: " + latitude + "<br>Kinh độ: " + longitude;
+
+  // Định dạng "x, y" (x = kinh độ, y = vĩ độ)
+  var coordinates = longitude + ", " + latitude;
+
+  // Gửi tọa độ về Google Sheet qua Google Apps Script
+  sendCoordinates(coordinates);
+}
+
+function sendCoordinates(coordinates) {
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "YOUR_SCRIPT_URL", true); // Thay "YOUR_SCRIPT_URL" bằng URL của Google Apps Script của bạn
+
+  // Thiết lập header để chỉ định loại nội dung
+  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+  // Gửi tọa độ với định dạng "x, y"
+  xhr.send("coordinates=" + encodeURIComponent(coordinates));
+
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      console.log("Tọa độ đã được gửi thành công.");
+    } else if (xhr.readyState == 4) {
+      console.log("Có lỗi xảy ra khi gửi tọa độ.");
+    }
+  };
 }
 
 function showError(error) {
