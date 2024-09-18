@@ -37,8 +37,8 @@ function showPosition(position) {
   // Hiển thị tọa độ trên trang web
   document.getElementById("location").innerHTML = "Vĩ độ: " + latitude + "<br>Kinh độ: " + longitude;
 
-  // Định dạng "x, y" (x = kinh độ, y = vĩ độ)
-  var coordinates = longitude + ", " + latitude;
+  // Định dạng "x, y" (x = vĩ độ, y = kinh độ)
+  var coordinates = latitude + ", " + longitude;
 
   // Lấy thông tin Họ và tên, MSSV từ form
   var name = document.getElementById("name").value;
