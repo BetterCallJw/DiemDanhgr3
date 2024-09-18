@@ -35,8 +35,7 @@
     // Kiem tra mat khau va xoa trang thai neu dung
     function checkPassword() {
         var password = document.getElementById("password").value;
-        var correctPassword = "12345"; // Mat khau cua ban
-
+        var correctPassword = "12345";
         if (password === correctPassword) {
             localStorage.removeItem("submitted");
             alert("Mat khau dung! Trang thai da duoc dat lai. Tai lai trang de dien lai thong tin.");
