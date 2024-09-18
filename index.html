@@ -3,11 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Điểm danh - Lấy tọa độ</title>
+    <title>Định vị thiết bị</title>
 </head>
 <body>
 
-<h1>Lấy tọa độ</h1>
+<h1>Định vị thiết bị di động</h1>
+
+<!-- Form để nhập Họ và tên, MSSV -->
+<form id="infoForm">
+    <label for="name">Họ và tên:</label><br>
+    <input type="text" id="name" name="name" required><br><br>
+    <label for="mssv">MSSV:</label><br>
+    <input type="text" id="mssv" name="mssv" required><br><br>
+</form>
+
 <button onclick="getLocation()">Lấy vị trí hiện tại</button>
 
 <p id="location"></p>
@@ -31,25 +40,38 @@ function showPosition(position) {
   // Định dạng "x, y" (x = kinh độ, y = vĩ độ)
   var coordinates = longitude + ", " + latitude;
 
-  // Gửi tọa độ về Google Sheet qua Google Apps Script
-  sendCoordinates(coordinates);
+  // Lấy thông tin Họ và tên, MSSV từ form
+  var name = document.getElementById("name").value;
+  var mssv = document.getElementById("mssv").value;
+
+  // Kiểm tra nếu thông tin nhập liệu hợp lệ
+  if (name && mssv) {
+    // Gửi thông tin về Google Sheets qua Google Apps Script
+    sendData(name, mssv, coordinates);
+  } else {
+    alert("Vui lòng điền đầy đủ Họ và tên và MSSV.");
+  }
 }
 
-function sendCoordinates(coordinates) {
+function sendData(name, mssv, coordinates) {
   var xhr = new XMLHttpRequest();
-  xhr.open("POST", "https://script.google.com/macros/s/AKfycbwp8JNDaJ6GgGisegC_LyGAofoFJiGSvbRYqhDH9NE/dev", true); // Thay YOUR_SCRIPT_URL bằng URL Google Apps Script của bạn
+  xhr.open("POST", "https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", true); // Thay "YOUR_SCRIPT_URL" bằng URL của Google Apps Script của bạn
 
-  // Thiết lập header để gửi dữ liệu URL-encoded
+  // Thiết lập header để chỉ định loại nội dung
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-  // Gửi tọa độ với định dạng "coordinates=x, y"
-  xhr.send("coordinates=" + encodeURIComponent(coordinates));
+  // Gửi thông tin Họ và tên, MSSV và tọa độ
+  var data = "name=" + encodeURIComponent(name) + 
+             "&mssv=" + encodeURIComponent(mssv) + 
+             "&coordinates=" + encodeURIComponent(coordinates);
+  
+  xhr.send(data);
 
   xhr.onreadystatechange = function() {
     if (xhr.readyState == 4 && xhr.status == 200) {
-      console.log("Tọa độ đã được gửi thành công.");
+      console.log("Thông tin đã được gửi thành công.");
     } else if (xhr.readyState == 4) {
-      console.log("Có lỗi xảy ra khi gửi tọa độ.");
+      console.log("Có lỗi xảy ra khi gửi thông tin.");
     }
   };
 }
