@@ -5,8 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dinh vi thiet bi</title>
     <script>
-    // Kiem tra neu nguoi dung da dien thong tin truoc do
+    // Kiem tra neu da co toa do trong localStorage va hien thi no
     window.onload = function() {
+        if (localStorage.getItem("latitude") && localStorage.getItem("longitude")) {
+            var latitude = localStorage.getItem("latitude");
+            var longitude = localStorage.getItem("longitude");
+            document.getElementById("location").innerHTML = "Vi do: " + latitude + "<br>Kinh do: " + longitude;
+        }
+
+        // Kiem tra neu nguoi dung da dien thong tin truoc do
         if (localStorage.getItem("submitted") === "true") {
             alert("Ban da dien thong tin, khong the truy cap lai.");
             document.body.innerHTML = `
@@ -20,17 +27,15 @@
         }
     };
 
-    // Hien thi form nhap mat khau
+    // Hien thi mk
     function showPasswordPrompt() {
         document.getElementById("passwordPrompt").style.display = "block";
     }
 
-    // Ham kiem tra mat khau va xoa trang thai neu dung
+    // Kiem tra mat khau va xoa trang thai neu dung
     function checkPassword() {
         var password = document.getElementById("password").value;
-
-        // Mat khau can duoc bao mat tot hon trong moi truong thuc te
-        var correctPassword = "your_password"; // Dat mat khau cua ban o day
+        var correctPassword = "12345"; // Mat khau cua ban
 
         if (password === correctPassword) {
             localStorage.removeItem("submitted");
@@ -56,8 +61,9 @@
         // Hien thi toa do tren trang web
         document.getElementById("location").innerHTML = "Vi do: " + latitude + "<br>Kinh do: " + longitude;
 
-        // Dinh dang "x, y" (x = vi do, y = kinh do)
-        var coordinates = latitude + ", " + longitude;
+        // Luu toa do vao localStorage
+        localStorage.setItem("latitude", latitude);
+        localStorage.setItem("longitude", longitude);
 
         // Lay thong tin Ho va ten, MSSV tu form
         var name = document.getElementById("name").value;
@@ -65,8 +71,8 @@
 
         // Kiem tra neu thong tin nhap lieu hop le
         if (name && mssv) {
-            // Gui thong tin ve Google Sheets qua Google Apps Script
-            sendData(name, mssv, coordinates);
+            // Gui thong tin ve Google Sheets
+            sendData(name, mssv, latitude + ", " + longitude);
             // Luu trang thai vao localStorage sau khi gui thanh cong
             localStorage.setItem("submitted", "true");
         } else {
@@ -79,9 +85,8 @@
 
     function sendData(name, mssv, coordinates) {
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", true); // Thay URL nay bang URL cua Google Apps Script cua ban
+        xhr.open("POST", "https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", true);
 
-        // Thiet lap header de chi dinh loai noi dung
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
         // Gui thong tin Ho va ten, MSSV va toa do
