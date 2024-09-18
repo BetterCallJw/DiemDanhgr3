@@ -7,31 +7,33 @@
     <script>
     // Kiem tra neu nguoi dung da dien thong tin truoc do
     window.onload = function() {
-        if (localStorage.getItem("da_nop") === "true") {
+        if (localStorage.getItem("submitted") === "true") {
             alert("Ban da dien thong tin, khong the truy cap lai.");
             document.body.innerHTML = `
                 <h1>Ban da dien thong tin va khong the truy cap lai.</h1>
-                <button onclick="hienFormMatKhau()">Nhap mat khau de dat lai</button>
-                <p id="formMatKhau" style="display:none;">
-                    <label for="matkhau">Nhap mat khau:</label><br>
-                    <input type="password" id="matkhau"><br><br>
-                    <button onclick="kiemTraMatKhau()">Xac nhan</button>
+                <button onclick="showPasswordPrompt()">Nhap mat khau de dat lai</button>
+                <p id="passwordPrompt" style="display:none;">
+                    <label for="password">Nhap mat khau:</label><br>
+                    <input type="password" id="password"><br><br>
+                    <button onclick="checkPassword()">Xac nhan</button>
                 </p>`;
         }
     };
 
     // Hien thi form nhap mat khau
-    function hienFormMatKhau() {
-        document.getElementById("formMatKhau").style.display = "block";
+    function showPasswordPrompt() {
+        document.getElementById("passwordPrompt").style.display = "block";
     }
 
-    // Kiem tra mat khau va xoa trang thai neu dung
-    function kiemTraMatKhau() {
-        var matkhau = document.getElementById("matkhau").value;
-        var matKhauDung = "12345";
+    // Ham kiem tra mat khau va xoa trang thai neu dung
+    function checkPassword() {
+        var password = document.getElementById("password").value;
 
-        if (matkhau === matKhauDung) {
-            localStorage.removeItem("da_nop");
+        // Mat khau can duoc bao mat tot hon trong moi truong thuc te
+        var correctPassword = "your_password"; // Dat mat khau cua ban o day
+
+        if (password === correctPassword) {
+            localStorage.removeItem("submitted");
             alert("Mat khau dung! Trang thai da duoc dat lai. Tai lai trang de dien lai thong tin.");
             location.reload(); // Tai lai trang de quay ve trang thai ban dau
         } else {
@@ -39,42 +41,51 @@
         }
     }
 
-    // Lay vi tri
-    function layViTri() {
+    function getLocation() {
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(hienViTri, baoLoi);
+            navigator.geolocation.getCurrentPosition(showPosition, showError);
         } else {
-            document.getElementById("toado").innerHTML = "Trinh duyet cua ban khong ho tro Geolocation.";
+            document.getElementById("location").innerHTML = "Trinh duyet cua ban khong ho tro Geolocation.";
         }
     }
 
-    // Hien thi vi tri
-    function hienViTri(position) {
-        var viDo = position.coords.latitude;
-        var kinhDo = position.coords.longitude;
-        document.getElementById("toado").innerHTML = "Vi do: " + viDo + "<br>Kinh do: " + kinhDo;
+    function showPosition(position) {
+        var latitude = position.coords.latitude;
+        var longitude = position.coords.longitude;
 
-        var toado = viDo + ", " + kinhDo;
-        var ten = document.getElementById("ten").value;
+        // Hien thi toa do tren trang web
+        document.getElementById("location").innerHTML = "Vi do: " + latitude + "<br>Kinh do: " + longitude;
+
+        // Dinh dang "x, y" (x = vi do, y = kinh do)
+        var coordinates = latitude + ", " + longitude;
+
+        // Lay thong tin Ho va ten, MSSV tu form
+        var name = document.getElementById("name").value;
         var mssv = document.getElementById("mssv").value;
 
-        if (ten && mssv) {
-            guiDuLieu(ten, mssv, toado);
-            localStorage.setItem("da_nop", "true");
+        // Kiem tra neu thong tin nhap lieu hop le
+        if (name && mssv) {
+            // Gui thong tin ve Google Sheets qua Google Apps Script
+            sendData(name, mssv, coordinates);
+            // Luu trang thai vao localStorage sau khi gui thanh cong
+            localStorage.setItem("submitted", "true");
         } else {
             alert("Vui long dien day du Ho va ten va MSSV.");
         }
     }
 
-    // Gui du lieu ve server
-    function guiDuLieu(ten, mssv, toado) {
+    function sendData(name, mssv, coordinates) {
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", true);
+        xhr.open("POST", "https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", true); // Thay URL nay bang URL cua Google Apps Script cua ban
 
+        // Thiet lap header de chi dinh loai noi dung
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        var data = "ten=" + encodeURIComponent(ten) + 
+
+        // Gui thong tin Ho va ten, MSSV va toa do
+        var data = "name=" + encodeURIComponent(name) + 
                    "&mssv=" + encodeURIComponent(mssv) + 
-                   "&toado=" + encodeURIComponent(toado);
+                   "&coordinates=" + encodeURIComponent(coordinates);
+
         xhr.send(data);
 
         xhr.onreadystatechange = function() {
@@ -86,20 +97,19 @@
         };
     }
 
-    // Bao loi vi tri
-    function baoLoi(error) {
+    function showError(error) {
         switch(error.code) {
             case error.PERMISSION_DENIED:
-                document.getElementById("toado").innerHTML = "Ban da tu choi quyen truy cap vi tri.";
+                document.getElementById("location").innerHTML = "Ban da tu choi quyen truy cap vi tri.";
                 break;
             case error.POSITION_UNAVAILABLE:
-                document.getElementById("toado").innerHTML = "Thong tin vi tri khong kha dung.";
+                document.getElementById("location").innerHTML = "Thong tin vi tri khong kha dung.";
                 break;
             case error.TIMEOUT:
-                document.getElementById("toado").innerHTML = "Yeu cau vi tri bi het thoi gian.";
+                document.getElementById("location").innerHTML = "Yeu cau vi tri bi het thoi gian.";
                 break;
             case error.UNKNOWN_ERROR:
-                document.getElementById("toado").innerHTML = "Loi khong xac dinh.";
+                document.getElementById("location").innerHTML = "Loi khong xac dinh.";
                 break;
         }
     }
@@ -110,16 +120,16 @@
 <h1>Dinh vi thiet bi di dong</h1>
 
 <!-- Form de nhap Ho va ten, MSSV -->
-<form id="formThongTin">
-    <label for="ten">Ho va ten:</label><br>
-    <input type="text" id="ten" name="ten" required><br><br>
+<form id="infoForm">
+    <label for="name">Ho va ten:</label><br>
+    <input type="text" id="name" name="name" required><br><br>
     <label for="mssv">MSSV:</label><br>
     <input type="text" id="mssv" name="mssv" required><br><br>
 </form>
 
-<button onclick="layViTri()">Lay vi tri hien tai</button>
+<button onclick="getLocation()">Lay vi tri hien tai</button>
 
-<p id="toado"></p>
+<p id="location"></p>
 
 </body>
 </html>
