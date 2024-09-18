@@ -28,7 +28,7 @@
     // Kiem tra mat khau va xoa trang thai neu dung
     function kiemTraMatKhau() {
         var matkhau = document.getElementById("matkhau").value;
-        var matKhauDung = "12345"; // Dat mat khau cua ban o day
+        var matKhauDung = "12345";
 
         if (matkhau === matKhauDung) {
             localStorage.removeItem("da_nop");
@@ -69,7 +69,7 @@
     // Gui du lieu ve server
     function guiDuLieu(ten, mssv, toado) {
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", true); // Thay URL nay bang URL cua Google Apps Script cua ban
+        xhr.open("POST", "https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", true);
 
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         var data = "ten=" + encodeURIComponent(ten) + 
