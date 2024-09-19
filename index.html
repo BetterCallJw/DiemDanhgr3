@@ -73,8 +73,10 @@
             // Lưu trạng thái vào localStorage sau khi gửi thành công
             localStorage.setItem("submitted", "true");
 
-            // Điều hướng tới trang thông báo sau khi nhập xong thông tin
-            window.location.href = "http://example.com"; // Chuyển hướng đến trang chặn truy cập sau khi gửi
+            // Cập nhật giao diện sau khi gửi thông tin
+            document.body.innerHTML = `
+                <h1>Thông tin đã được gửi thành công!</h1>
+                <p>Vĩ độ: ${latitude}, Kinh độ: ${longitude}</p>`;
         } else {
             alert("Vui lòng điền đầy đủ Họ và tên và MSSV.");
         }
