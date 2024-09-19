@@ -5,18 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dinh vi thiet bi</title>
     <script>
-    // Ktra neu nguoi dung da dien thong tin truoc do
+    // Kiem tra neu da co toa do trong localStorage va hien thi no
     window.onload = function() {
+        if (localStorage.getItem("latitude") && localStorage.getItem("longitude")) {
+            var latitude = localStorage.getItem("latitude");
+            var longitude = localStorage.getItem("longitude");
+            document.getElementById("location").innerHTML = "Vi do: " + latitude + "<br>Kinh do: " + longitude;
+        }
+
+        // Ktra neu nguoi dung da dien thong tin truoc do
         if (localStorage.getItem("submitted") === "true") {
             alert("Ban da dien thong tin, khong the truy cap lai.");
-            document.body.innerHTML = 
+            document.body.innerHTML = `
                 <h1>Ban da dien thong tin va khong the truy cap lai.</h1>
                 <button onclick="showPasswordPrompt()">Nhap mat khau de dat lai</button>
                 <p id="passwordPrompt" style="display:none;">
                     <label for="password">Nhap mat khau:</label><br>
                     <input type="password" id="password"><br><br>
                     <button onclick="checkPassword()">Xac nhan</button>
-                </p>;
+                </p>`;
         }
     };
 
@@ -25,11 +32,10 @@
         document.getElementById("passwordPrompt").style.display = "block";
     }
 
-    // ktra mk va xoa trang thai neu dung
+    // Kiem tra mat khau va xoa trang thai neu dung
     function checkPassword() {
         var password = document.getElementById("password").value;
-
-        var correctPassword = "12345"; //
+        var correctPassword = "12345"; // Mat khau cua ban
 
         if (password === correctPassword) {
             localStorage.removeItem("submitted");
@@ -52,11 +58,12 @@
         var latitude = position.coords.latitude;
         var longitude = position.coords.longitude;
 
-        // Hien thi toa do tren web
+        // Hien thi toa do tren trang web
         document.getElementById("location").innerHTML = "Vi do: " + latitude + "<br>Kinh do: " + longitude;
 
-        // Dinh dang "x, y" (x = vi do, y = kinh do)
-        var coordinates = latitude + ", " + longitude;
+        // Luu toa do vao localStorage
+        localStorage.setItem("latitude", latitude);
+        localStorage.setItem("longitude", longitude);
 
         // Lay thong tin Ho va ten, MSSV tu form
         var name = document.getElementById("name").value;
@@ -64,8 +71,8 @@
 
         // Kiem tra neu thong tin nhap lieu hop le
         if (name && mssv) {
-            // Gui thong tin ve gg sheet
-            sendData(name, mssv, coordinates);
+            // Gui thong tin ve Google Sheets
+            sendData(name, mssv, latitude + ", " + longitude);
             // Luu trang thai vao localStorage sau khi gui thanh cong
             localStorage.setItem("submitted", "true");
         } else {
