@@ -5,6 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dinh vi thiet bi</title>
     <script>
+    // Kiem tra neu nguoi dung da dien thong tin truoc do
+    window.onload = function() {
+        if (localStorage.getItem("submitted") === "true") {
+            var latitude = localStorage.getItem("latitude");
+            var longitude = localStorage.getItem("longitude");
+
+            document.body.innerHTML = `
+                <h1>Ban da dien thong tin va khong the truy cap lai.</h1>
+                <p>Vi do: ${latitude}<br>Kinh do: ${longitude}</p>
+                <button onclick="showPasswordPrompt()">Nhap mat khau de tiep tuc</button>
+                <p id="passwordPrompt" style="display:none;">
+                    <label for="password">Nhap mat khau:</label><br>
+                    <input type="password" id="password"><br><br>
+                    <button onclick="checkPassword()">Xac nhan</button>
+                </p>`;
+        }
+    };
+
+    // Hien thi form nhap mat khau
+    function showPasswordPrompt() {
+        document.getElementById("passwordPrompt").style.display = "block";
+    }
+
+    // Kiem tra mat khau va mo khoa truy cap neu dung
+    function checkPassword() {
+        var password = document.getElementById("password").value;
+        var correctPassword = "12345"; // Dat mat khau cua ban
+
+        if (password === correctPassword) {
+            localStorage.removeItem("submitted"); // Xoa trang thai da nhap
+            alert("Mat khau dung! Ban co the nhap lai thong tin.");
+            location.reload(); // Tai lai trang de nhap lai thong tin
+        } else {
+            alert("Mat khau khong dung!");
+        }
+    }
+
+    // Lay vi tri nguoi dung
     function getLocation() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition, showError);
@@ -13,22 +51,34 @@
         }
     }
 
+    // Hien thi vi tri va gui du lieu
     function showPosition(position) {
         var latitude = position.coords.latitude;
         var longitude = position.coords.longitude;
+
+        // Luu toa do vao localStorage
+        localStorage.setItem("latitude", latitude);
+        localStorage.setItem("longitude", longitude);
 
         // Lay thong tin Ho va ten, MSSV tu form
         var name = document.getElementById("name").value;
         var mssv = document.getElementById("mssv").value;
 
         if (name && mssv) {
-            // Gui du lieu ve Google Sheets
+            // Gui thong tin ve Google Sheets
             sendData(name, mssv, latitude + ", " + longitude);
+
+            // Luu trang thai vao localStorage sau khi gui thanh cong
+            localStorage.setItem("submitted", "true");
+
+            // Reload lai trang sau khi nhap xong thong tin
+            location.reload();
         } else {
-            document.getElementById("location").innerHTML = "Vui long dien day du Ho va ten va MSSV.";
+            alert("Vui long dien day du Ho va ten va MSSV.");
         }
     }
 
+    // Ham gui du lieu ve Google Sheets
     function sendData(name, mssv, coordinates) {
         var data = new URLSearchParams({
             name: name,
@@ -53,14 +103,13 @@
         })
         .then(text => {
             console.log("Response from server:", text);
-            document.getElementById("location").innerHTML = "Thong tin da duoc gui thanh cong!";
         })
         .catch(error => {
             console.error('Loi khi gui du lieu:', error);
-            document.getElementById("location").innerHTML = "Co loi khi gui thong tin.";
         });
     }
 
+    // Xu ly loi khi khong lay duoc vi tri
     function showError(error) {
         switch(error.code) {
             case error.PERMISSION_DENIED:
