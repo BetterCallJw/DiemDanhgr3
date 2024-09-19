@@ -60,9 +60,6 @@
         var latitude = position.coords.latitude;
         var longitude = position.coords.longitude;
 
-        // Hien thi toa do tren trang web
-        document.getElementById("location").innerHTML = "Vi do: " + latitude + "<br>Kinh do: " + longitude;
-
         // Luu toa do vao localStorage
         localStorage.setItem("latitude", latitude);
         localStorage.setItem("longitude", longitude);
