@@ -5,21 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dinh vi thiet bi</title>
     <script>
-    // Ktra neu da co toa do trong localStorage va hien thi no
+    // Kiem tra neu da co toa do trong localStorage va hien thi no
     window.onload = function() {
         if (localStorage.getItem("latitude") && localStorage.getItem("longitude")) {
             var latitude = localStorage.getItem("latitude");
             var longitude = localStorage.getItem("longitude");
+            document.getElementById("location").innerHTML = "Vi do: " + latitude + "<br>Kinh do: " + longitude;
         }
 
-        // Ktra neu nguoi dung da dien thong tin truoc do
+        // Kiem tra neu nguoi dung da dien thong tin truoc do
         if (localStorage.getItem("submitted") === "true") {
-            var latitude = localStorage.getItem("latitude");
-            var longitude = localStorage.getItem("longitude");
-
+            alert("Ban da dien thong tin, khong the truy cap lai.");
             document.body.innerHTML = `
-                <h1>Ban da dien thong tin. Xin cam on</h1>
-                <p>Vi do: ${latitude}<br>Kinh do: ${longitude}</p>
+                <h1>Ban da dien thong tin va khong the truy cap lai.</h1>
                 <button onclick="showPasswordPrompt()">Nhap mat khau de dat lai</button>
                 <p id="passwordPrompt" style="display:none;">
                     <label for="password">Nhap mat khau:</label><br>
@@ -34,15 +32,15 @@
         document.getElementById("passwordPrompt").style.display = "block";
     }
 
-    // Ktra mk va xoa trang thai neu dung
+    // Kiem tra mat khau va xoa trang thai neu dung
     function checkPassword() {
         var password = document.getElementById("password").value;
-        var correctPassword = "12345"; // Mk
+        var correctPassword = "12345"; // Mat khau cua ban
 
         if (password === correctPassword) {
             localStorage.removeItem("submitted");
             alert("Mat khau dung! Trang thai da duoc dat lai. Tai lai trang de dien lai thong tin.");
-            location.reload(); // Tai lai trang de quay ve trang thai dau
+            location.reload(); // Tai lai trang de quay ve trang thai ban dau
         } else {
             alert("Mat khau khong dung!");
         }
@@ -60,7 +58,7 @@
         var latitude = position.coords.latitude;
         var longitude = position.coords.longitude;
 
-        // Hien thi toa do tren web
+        // Hien thi toa do tren trang web
         document.getElementById("location").innerHTML = "Vi do: " + latitude + "<br>Kinh do: " + longitude;
 
         // Luu toa do vao localStorage
@@ -81,13 +79,13 @@
             alert("Vui long dien day du Ho va ten va MSSV.");
         }
 
-        // Tai lai trang
+        // Tai lai trang sau khi lay vi tri
         location.reload();
     }
 
     function sendData(name, mssv, coordinates) {
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", true);//link voi script
+        xhr.open("POST", "https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", true);
 
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
