@@ -10,14 +10,16 @@
         if (localStorage.getItem("latitude") && localStorage.getItem("longitude")) {
             var latitude = localStorage.getItem("latitude");
             var longitude = localStorage.getItem("longitude");
-            document.getElementById("location").innerHTML = "Vi do: " + latitude + "<br>Kinh do: " + longitude;
         }
 
         // Kiem tra neu nguoi dung da dien thong tin truoc do
         if (localStorage.getItem("submitted") === "true") {
-            alert("Ban da dien thong tin, khong the truy cap lai.");
+            var latitude = localStorage.getItem("latitude");
+            var longitude = localStorage.getItem("longitude");
+
             document.body.innerHTML = `
                 <h1>Ban da dien thong tin va khong the truy cap lai.</h1>
+                <p>Vi do: ${latitude}<br>Kinh do: ${longitude}</p>
                 <button onclick="showPasswordPrompt()">Nhap mat khau de dat lai</button>
                 <p id="passwordPrompt" style="display:none;">
                     <label for="password">Nhap mat khau:</label><br>
