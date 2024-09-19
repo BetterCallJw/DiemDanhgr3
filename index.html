@@ -23,7 +23,7 @@
         }
     };
 
-    // Hien thi form nhap mat khau
+    // Hien thi form mat khau
     function showPasswordPrompt() {
         document.getElementById("passwordPrompt").style.display = "block";
     }
@@ -42,7 +42,6 @@
         }
     }
 
-    // Lay vi tri nguoi dung
     function getLocation() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition, showError);
@@ -51,7 +50,6 @@
         }
     }
 
-    // Hien thi vi tri va gui du lieu
     function showPosition(position) {
         var latitude = position.coords.latitude;
         var longitude = position.coords.longitude;
@@ -71,14 +69,13 @@
             // Luu trang thai vao localStorage sau khi gui thanh cong
             localStorage.setItem("submitted", "true");
 
-            // Reload lai trang sau khi nhap xong thong tin
-            location.reload();
+            // Chuyen sang trang web khac sau khi nhap thong tin
+            window.location.href = "https://example.com"; // Thay doi URL sang trang web khac
         } else {
             alert("Vui long dien day du Ho va ten va MSSV.");
         }
     }
 
-    // Ham gui du lieu ve Google Sheets
     function sendData(name, mssv, coordinates) {
         var data = new URLSearchParams({
             name: name,
@@ -87,7 +84,7 @@
         });
 
         // Su dung fetch de gui du lieu ve Google Sheets
-        fetch("https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", {
+        fetch("https://script.google.com/macros/s/YOUR_SCRIPT_URL/exec", {
             method: "POST",
             body: data,
             headers: {
@@ -109,7 +106,6 @@
         });
     }
 
-    // Xu ly loi khi khong lay duoc vi tri
     function showError(error) {
         switch(error.code) {
             case error.PERMISSION_DENIED:
