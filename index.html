@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Định vị thiết bị</title>
     <script>
-    // Kiểm tra nếu người dùng đã nhập thông tin trước đó
+    // Ktra nếu người dùng đã nhập thông tin trước đó
     window.onload = function() {
         if (localStorage.getItem("submitted") === "true") {
             var latitude = localStorage.getItem("latitude");
@@ -23,15 +23,15 @@
         }
     };
 
-    // Hiển thị khung nhập mật khẩu
+    // Khung mk
     function showPasswordPrompt() {
         document.getElementById("passwordPrompt").style.display = "block";
     }
 
-    // Kiểm tra mật khẩu và reset lại localStorage
+    // ktra mk và reset lại localStorage
     function checkPassword() {
         var password = document.getElementById("password").value;
-        var correctPassword = "12345"; // Mật khẩu của bạn
+        var correctPassword = "12345"; // mk
 
         if (password === correctPassword) {
             localStorage.removeItem("submitted"); // Xóa trạng thái đã nhập
@@ -67,7 +67,7 @@
         var mssv = document.getElementById("mssv").value;
 
         if (name && mssv) {
-            // Gửi thông tin về Google Sheets
+            // Gửi thông tin về gg sheet
             sendData(name, mssv, latitude + ", " + longitude);
 
             // Lưu trạng thái vào localStorage sau khi gửi thành công
@@ -82,7 +82,7 @@
         }
     }
 
-    // Hàm gửi dữ liệu về Google Sheets
+    // Hàm gửi dữ liệu về gg sheet
     function sendData(name, mssv, coordinates) {
         var data = new URLSearchParams({
             name: name,
@@ -90,7 +90,7 @@
             coordinates: coordinates
         });
 
-        // Sử dụng fetch để gửi dữ liệu về Google Sheets
+        // Sử dụng fetch để gửi dữ liệu về gg sheet
         fetch("https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", {
             method: "POST",
             body: data,
