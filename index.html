@@ -25,7 +25,8 @@
                     <label for="password">Nhap mat khau:</label><br>
                     <input type="password" id="password"><br><br>
                     <button onclick="checkPassword()">Xac nhan</button>
-                </p>`;
+                </p>
+                <p id="message"></p>`;
         }
     };
 
@@ -38,15 +39,16 @@
     function checkPassword() {
         var password = document.getElementById("password").value;
         var correctPassword = "12345"; // Mat khau cua ban
+        var messageElement = document.getElementById("message");
 
         if (password === correctPassword) {
             localStorage.removeItem("submitted");
             localStorage.removeItem("latitude");
             localStorage.removeItem("longitude");
-            alert("Mat khau dung! Trang thai da duoc dat lai. Tai lai trang de dien lai thong tin.");
-            location.reload(); // Tai lai trang de quay ve trang thai ban dau
+            messageElement.innerText = "Trang thai da duoc dat lai. Tai lai trang de dien lai thong tin.";
+            setTimeout(() => location.reload(), 1000);
         } else {
-            alert("Mat khau khong dung!");
+            messageElement.innerText = "Mat khau khong dung!";
         }
     }
 
@@ -77,7 +79,7 @@
             // Luu trang thai vao localStorage sau khi gui thanh cong
             localStorage.setItem("submitted", "true");
         } else {
-            alert("Vui long dien day du Ho va ten va MSSV.");
+            document.getElementById("location").innerHTML = "Vui long dien day du Ho va ten va MSSV.";
         }
 
         // Tai lai trang sau khi lay vi tri
