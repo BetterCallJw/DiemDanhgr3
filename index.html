@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Định vị thiết bị</title>
     <script>
-    // Ktra nếu người dùng đã nhập thông tin trước đó
+    // Kiểm tra nếu người dùng đã nhập thông tin trước đó
     window.onload = function() {
         if (localStorage.getItem("submitted") === "true") {
             var latitude = localStorage.getItem("latitude");
             var longitude = localStorage.getItem("longitude");
 
-            document.body.innerHTML = 
+            document.body.innerHTML = `
                 <h1>Bạn đã nhập thông tin trước đó và không thể nhập lại.</h1>
                 <p>Vĩ độ: ${latitude}, Kinh độ: ${longitude}</p>
                 <button onclick="showPasswordPrompt()">Nhập mật khẩu để đặt lại</button>
@@ -19,19 +19,19 @@
                     <label for="password">Nhập mật khẩu:</label><br>
                     <input type="password" id="password"><br><br>
                     <button onclick="checkPassword()">Xác nhận</button>
-                </div>;
+                </div>`;
         }
     };
 
-    // Khung mk
+    // Hiển thị khung nhập mật khẩu
     function showPasswordPrompt() {
         document.getElementById("passwordPrompt").style.display = "block";
     }
 
-    // ktra mk và reset lại localStorage
+    // Kiểm tra mật khẩu và reset lại localStorage
     function checkPassword() {
         var password = document.getElementById("password").value;
-        var correctPassword = "12345"; // mk
+        var correctPassword = "12345"; // Mật khẩu của bạn
 
         if (password === correctPassword) {
             localStorage.removeItem("submitted"); // Xóa trạng thái đã nhập
@@ -67,22 +67,22 @@
         var mssv = document.getElementById("mssv").value;
 
         if (name && mssv) {
-            // Gửi thông tin về gg sheet
+            // Gửi thông tin về Google Sheets
             sendData(name, mssv, latitude + ", " + longitude);
 
             // Lưu trạng thái vào localStorage sau khi gửi thành công
             localStorage.setItem("submitted", "true");
 
             // Cập nhật giao diện sau khi gửi thông tin
-            document.body.innerHTML = 
+            document.body.innerHTML = `
                 <h1>Thông tin đã được gửi thành công!</h1>
-                <p>Vĩ độ: ${latitude}, Kinh độ: ${longitude}</p>;
+                <p>Vĩ độ: ${latitude}, Kinh độ: ${longitude}</p>`;
         } else {
             alert("Vui lòng điền đầy đủ Họ và tên và MSSV.");
         }
     }
 
-    // Hàm gửi dữ liệu về gg sheet
+    // Hàm gửi dữ liệu về Google Sheets
     function sendData(name, mssv, coordinates) {
         var data = new URLSearchParams({
             name: name,
@@ -90,7 +90,7 @@
             coordinates: coordinates
         });
 
-        // Sử dụng fetch để gửi dữ liệu về gg sheet
+        // Sử dụng fetch để gửi dữ liệu về Google Sheets
         fetch("https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", {
             method: "POST",
             body: data,
