@@ -5,8 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Định vị thiết bị</title>
     <script>
-    // Ktra nếu người dùng đã nhập thông tin trước đó
+    // Biến kiểm tra xem có cần reset hay không
+    const resetFlag = false; // Thay đổi giá trị này để reset
+
+    // Kiểm tra nếu người dùng đã nhập thông tin trước đó
     window.onload = function() {
+        // Nếu biến resetFlag được đặt là true, reset trạng thái và cho phép nhập lại
+        if (resetFlag) {
+            localStorage.removeItem("submitted");  // Xóa trạng thái đã nhập
+            localStorage.removeItem("latitude");   // Xóa vĩ độ
+            localStorage.removeItem("longitude");  // Xóa kinh độ
+            alert("Đã reset trạng thái, bạn có thể nhập lại thông tin.");
+        }
+
+        // Kiểm tra nếu trạng thái 'submitted' đã lưu trong localStorage
         if (localStorage.getItem("submitted") === "true") {
             var latitude = localStorage.getItem("latitude");
             var longitude = localStorage.getItem("longitude");
@@ -23,15 +35,15 @@
         }
     };
 
-    // Khung mk
+    // Khung nhập mật khẩu
     function showPasswordPrompt() {
         document.getElementById("passwordPrompt").style.display = "block";
     }
 
-    // ktra mk và reset lại localStorage
+    // Kiểm tra mật khẩu và reset lại localStorage
     function checkPassword() {
         var password = document.getElementById("password").value;
-        var correctPassword = "12345"; // mk
+        var correctPassword = "12345"; // Mật khẩu của bạn
 
         if (password === correctPassword) {
             localStorage.removeItem("submitted"); // Xóa trạng thái đã nhập
@@ -67,7 +79,7 @@
         var mssv = document.getElementById("mssv").value;
 
         if (name && mssv) {
-            // Gửi thông tin về gg sheet
+            // Gửi thông tin về Google Sheets
             sendData(name, mssv, latitude + ", " + longitude);
 
             // Lưu trạng thái vào localStorage sau khi gửi thành công
@@ -82,7 +94,7 @@
         }
     }
 
-    // Hàm gửi dữ liệu về gg sheet
+    // Hàm gửi dữ liệu về Google Sheets
     function sendData(name, mssv, coordinates) {
         var data = new URLSearchParams({
             name: name,
@@ -90,8 +102,8 @@
             coordinates: coordinates
         });
 
-        // Sử dụng fetch để gửi dữ liệu về gg sheet
-        fetch("https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", {
+        // Sử dụng fetch để gửi dữ liệu về Google Sheets
+        fetch("https://script.google.com/macros/s/YOUR_GOOGLE_SHEET_URL/exec", {
             method: "POST",
             body: data,
             headers: {
