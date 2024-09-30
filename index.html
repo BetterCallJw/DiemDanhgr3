@@ -21,45 +21,6 @@
     const processedBaseLatitude = processCoordinate(baseLatitude);
     const processedBaseLongitude = processCoordinate(baseLongitude);
 
-    // Kiểm tra nếu người dùng đã nhập thông tin trước đó
-    window.onload = function() {
-        if (localStorage.getItem("submitted") === "true") {
-            var latitude = localStorage.getItem("latitude");
-            var longitude = localStorage.getItem("longitude");
-
-            document.body.innerHTML = `
-                <h1>Bạn đã nhập thông tin trước đó và không thể nhập lại.</h1>
-                <p>Vĩ độ: ${latitude}, Kinh độ: ${longitude}</p>
-                <button onclick="showPasswordPrompt()">Nhập mật khẩu để đặt lại</button>
-                <div id="passwordPrompt" style="display:none;">
-                    <label for="password">Nhập mật khẩu:</label><br>
-                    <input type="password" id="password"><br><br>
-                    <button onclick="checkPassword()">Xác nhận</button>
-                </div>`;
-        }
-    };
-
-    // Hiển thị khung nhập mật khẩu
-    function showPasswordPrompt() {
-        document.getElementById("passwordPrompt").style.display = "block";
-    }
-
-    // Kiểm tra mật khẩu và reset lại localStorage
-    function checkPassword() {
-        var password = document.getElementById("password").value;
-        var correctPassword = "12345"; // Mật khẩu của bạn
-
-        if (password === correctPassword) {
-            localStorage.removeItem("submitted"); // Xóa trạng thái đã nhập
-            localStorage.removeItem("latitude");  // Xóa vĩ độ
-            localStorage.removeItem("longitude"); // Xóa kinh độ
-            alert("Trạng thái đã được reset. Bạn có thể nhập lại thông tin.");
-            location.reload(); // Tải lại trang để bắt đầu lại
-        } else {
-            alert("Mật khẩu không đúng!");
-        }
-    }
-
     // Lấy vị trí người dùng
     function getLocation() {
         if (navigator.geolocation) {
@@ -69,32 +30,28 @@
         }
     }
 
-    // Hiển thị vị trí và gửi dữ liệu
+    // Hiển thị vị trí và gửi dữ liệu thô về Google Sheets
     function showPosition(position) {
         var latitude = position.coords.latitude;
         var longitude = position.coords.longitude;
-
-        // Lưu tọa độ vào localStorage
-        localStorage.setItem("latitude", latitude);
-        localStorage.setItem("longitude", longitude);
 
         // Lấy thông tin Họ và tên, MSSV từ form
         var name = document.getElementById("name").value;
         var mssv = document.getElementById("mssv").value;
 
         if (name && mssv) {
-            // Xử lý và so sánh tọa độ
+            // Gửi tọa độ thô (chưa xử lý) về Google Sheets
+            sendData(name, mssv, latitude + ", " + longitude);
+
+            // Sau khi gửi, tiến hành xử lý tọa độ và so sánh
             var processedLatitude = processCoordinate(latitude);
             var processedLongitude = processCoordinate(longitude);
 
             // So sánh với tọa độ gốc
-            var result = compareCoordinates(processedLatitude, processedLongitude);
+            var attendance = compareCoordinates(processedLatitude, processedLongitude);
 
-            // Gửi thông tin về Google Sheets
-            sendData(name, mssv, latitude + ", " + longitude, result);
-
-            // Lưu trạng thái vào localStorage sau khi gửi thành công
-            localStorage.setItem("submitted", "true");
+            // Gửi kết quả so sánh về Google Sheets
+            sendAttendance(name, mssv, attendance);
 
             // Cập nhật giao diện sau khi gửi thông tin
             document.body.innerHTML = `
@@ -110,7 +67,7 @@
         const latDiff = Math.abs(lat - processedBaseLatitude);
         const lonDiff = Math.abs(lon - processedBaseLongitude);
 
-        // Kiểm tra nếu chênh lệch lớn hơn 2 đơn vị (có sai số ±2)
+        // Kiểm tra nếu chênh lệch lớn hơn 2 đơn vị (±2)
         if (latDiff <= 2 && lonDiff <= 2) {
             return "Có";
         } else {
@@ -118,16 +75,15 @@
         }
     }
 
-    // Hàm gửi dữ liệu về Google Sheets
-    function sendData(name, mssv, coordinates, attendance) {
+    // Hàm gửi tọa độ thô về Google Sheets
+    function sendData(name, mssv, coordinates) {
         var data = new URLSearchParams({
             name: name,
             mssv: mssv,
-            coordinates: coordinates,
-            attendance: attendance // Kết quả điểm danh
+            coordinates: coordinates // Gửi tọa độ thô chưa xử lý
         });
 
-        // Sử dụng fetch để gửi dữ liệu về Google Sheets
+        // Gửi dữ liệu thô về Google Sheets
         fetch("https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", {
             method: "POST",
             body: data,
@@ -147,6 +103,37 @@
         })
         .catch(error => {
             console.error('Lỗi khi gửi dữ liệu:', error);
+        });
+    }
+
+    // Hàm gửi kết quả điểm danh về Google Sheets
+    function sendAttendance(name, mssv, attendance) {
+        var data = new URLSearchParams({
+            name: name,
+            mssv: mssv,
+            attendance: attendance // Kết quả so sánh
+        });
+
+        // Gửi dữ liệu kết quả điểm danh về Google Sheets
+        fetch("https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", {
+            method: "POST",
+            body: data,
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.text();
+            } else {
+                throw new Error('Error submitting attendance');
+            }
+        })
+        .then(text => {
+            console.log("Attendance result:", text);
+        })
+        .catch(error => {
+            console.error('Lỗi khi gửi kết quả điểm danh:', error);
         });
     }
 
