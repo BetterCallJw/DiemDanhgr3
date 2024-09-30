@@ -86,17 +86,30 @@
     function compareCoordinates(lat, lon) {
         const processedLat = processCoordinate(lat);
         const processedLon = processCoordinate(lon);
-
+    
         const latDifference = Math.abs(processedLat - processedBaseLatitude);
         const lonDifference = Math.abs(processedLon - processedBaseLongitude);
 
-        return { latDifference, lonDifference };  // Trả về chênh lệch vĩ độ và kinh độ
+    // Trả về cả kết quả "Có/Không" và chênh lệch tọa độ
+        return {
+            attendance: (latDifference <= 2 && lonDifference <= 2) ? "Có" : "Không",
+            latDifference: latDifference,
+            lonDifference: lonDifference
+        };
     }
+
 
     function sendData(name, mssv, coordinates, result) {
         fetch("https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", {
             method: "POST",
-            body: new URLSearchParams({ name, mssv, coordinates, attendance: result }),
+            body: new URLSearchParams({
+                name, 
+                mssv, 
+                coordinates, 
+                attendance: result.attendance,  // Trạng thái "Có/Không"
+                latDifference: result.latDifference, // Chênh lệch vĩ độ
+                lonDifference: result.lonDifference  // Chênh lệch kinh độ
+            }),
             headers: { "Content-Type": "application/x-www-form-urlencoded" }
         })
         .then(response => response.ok ? response.text() : Promise.reject('Error submitting data'))
