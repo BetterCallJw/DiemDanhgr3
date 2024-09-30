@@ -77,66 +77,38 @@
     }
 
     // Hàm gửi tọa độ thô về Google Sheets
-    function sendData(name, mssv, coordinates) {
-        var data = new URLSearchParams({
-            name: name,
-            mssv: mssv,
-            coordinates: coordinates // Gửi tọa độ thô chưa xử lý
-        });
+    // Hàm gửi kết quả điểm danh về Google Sheets (gộp 2 hàm thành 1)
+function sendData(name, mssv, attendance) {
+    var data = new URLSearchParams({
+        name: name,
+        mssv: mssv,
+        attendance: attendance
+    });
 
-        // Gửi dữ liệu thô về Google Sheets
-        fetch("https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", {
-            method: "POST",
-            body: data,
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
-        })
-        .then(response => {
-            if (response.ok) {
-                return response.text();
-            } else {
-                throw new Error('Error submitting data');
-            }
-        })
-        .then(text => {
-            console.log("Response from server:", text);
-        })
-        .catch(error => {
-            console.error('Lỗi khi gửi dữ liệu:', error);
-        });
-    }
-
-    // Hàm gửi kết quả điểm danh về Google Sheets
-    function sendAttendance(name, mssv, attendance) {
-        var data = new URLSearchParams({
-            name: name,
-            mssv: mssv,
-            attendance: attendance // Kết quả so sánh
-        });
-
-        // Gửi dữ liệu kết quả điểm danh về Google Sheets
-        fetch("https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", {
-            method: "POST",
-            body: data,
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
-        })
-        .then(response => {
-            if (response.ok) {
-                return response.text();
-            } else {
-                throw new Error('Error submitting attendance');
-            }
-        })
-        .then(text => {
-            console.log("Attendance result:", text);
-        })
-        .catch(error => {
-            console.error('Lỗi khi gửi kết quả điểm danh:', error);
-        });
-    }
+    fetch("https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", {
+        method: "POST",
+        body: data,
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Lỗi   
+ khi gửi dữ liệu: ' + response.statusText);
+        }
+        return response.text();
+    })
+    .then(text => {
+        console.log("Kết quả điểm danh:", text);
+        // Hiển thị thông báo cho người dùng nếu cần
+        alert("Thông tin đã được gửi thành công!");
+    })
+    .catch(error => {
+        console.error('Lỗi khi gửi dữ liệu:', error);
+        alert("Có lỗi xảy ra khi gửi dữ liệu. Vui lòng thử lại sau.");
+    });
+}
 
     // Xử lý lỗi khi không lấy được vị trí
     function showError(error) {
