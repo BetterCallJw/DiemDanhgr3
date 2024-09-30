@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Định vị thiết bị</title>
     <script>
+    // Tọa độ gốc (vĩ độ và kinh độ)
+    const baseLatitude = 10.743263120325928;
+    const baseLongitude = 106.72970204788699;
+
+    // Hàm xử lý tọa độ (lấy 4 số sau dấu phẩy và nhân 10000)
+    function processCoordinate(value) {
+        return Math.floor(value * 10000);
+    }
+
+    // Lấy tọa độ gốc đã xử lý
+    const processedBaseLatitude = processCoordinate(baseLatitude);
+    const processedBaseLongitude = processCoordinate(baseLongitude);
+
     // Kiểm tra nếu người dùng đã nhập thông tin trước đó
     window.onload = function() {
         if (localStorage.getItem("submitted") === "true") {
@@ -67,8 +80,15 @@
         var mssv = document.getElementById("mssv").value;
 
         if (name && mssv) {
+            // Xử lý và so sánh tọa độ
+            var processedLatitude = processCoordinate(latitude);
+            var processedLongitude = processCoordinate(longitude);
+
+            // So sánh với tọa độ gốc
+            var result = compareCoordinates(processedLatitude, processedLongitude);
+
             // Gửi thông tin về Google Sheets
-            sendData(name, mssv, latitude + ", " + longitude);
+            sendData(name, mssv, latitude + ", " + longitude, result);
 
             // Lưu trạng thái vào localStorage sau khi gửi thành công
             localStorage.setItem("submitted", "true");
@@ -76,23 +96,32 @@
             // Cập nhật giao diện sau khi gửi thông tin
             document.body.innerHTML = `
                 <h1>Thông tin đã được gửi thành công!</h1>
-                <p>Vĩ độ: ${latitude}, Kinh độ: ${longitude}</p>
-                <h2>So sánh với tọa độ góc:</h2>
-                <p id="comparison"></p>`;
-            
-            // So sánh với tọa độ góc
-            compareWithCornerCoordinates(latitude, longitude);
+                <p>Vĩ độ: ${latitude}, Kinh độ: ${longitude}</p>`;
         } else {
             alert("Vui lòng điền đầy đủ Họ và tên và MSSV.");
         }
     }
 
+    // Hàm so sánh tọa độ
+    function compareCoordinates(lat, lon) {
+        const latDiff = Math.abs(lat - processedBaseLatitude);
+        const lonDiff = Math.abs(lon - processedBaseLongitude);
+
+        // Kiểm tra nếu chênh lệch vượt quá 2 đơn vị
+        if (latDiff > 2 || lonDiff > 2) {
+            return "Có";
+        } else {
+            return "Không";
+        }
+    }
+
     // Hàm gửi dữ liệu về Google Sheets
-    function sendData(name, mssv, coordinates) {
+    function sendData(name, mssv, coordinates, attendance) {
         var data = new URLSearchParams({
             name: name,
             mssv: mssv,
-            coordinates: coordinates
+            coordinates: coordinates,
+            attendance: attendance // Kết quả điểm danh
         });
 
         // Sử dụng fetch để gửi dữ liệu về Google Sheets
@@ -116,42 +145,6 @@
         .catch(error => {
             console.error('Lỗi khi gửi dữ liệu:', error);
         });
-    }
-
-    // Tọa độ góc
-    const cornerCoordinates = [
-        {lat: 10.762622, lon: 106.660172}, // Ví dụ: Tọa độ góc 1
-        {lat: 10.776889, lon: 106.700981}, // Ví dụ: Tọa độ góc 2
-        // Thêm tọa độ góc khác ở đây
-    ];
-
-    // So sánh tọa độ hiện tại với các tọa độ góc
-    function compareWithCornerCoordinates(latitude, longitude) {
-        let closestCorner = null;
-        let minDistance = Infinity;
-
-        cornerCoordinates.forEach(corner => {
-            let distance = calculateDistance(latitude, longitude, corner.lat, corner.lon);
-            if (distance < minDistance) {
-                minDistance = distance;
-                closestCorner = corner;
-            }
-        });
-
-        document.getElementById("comparison").innerHTML = `Tọa độ gần nhất: Vĩ độ: ${closestCorner.lat}, Kinh độ: ${closestCorner.lon}, Khoảng cách: ${minDistance.toFixed(2)} km`;
-    }
-
-    // Tính khoảng cách giữa hai tọa độ
-    function calculateDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371; // Bán kính trái đất (km)
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = 
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c; // Khoảng cách theo km
     }
 
     // Xử lý lỗi khi không lấy được vị trí
