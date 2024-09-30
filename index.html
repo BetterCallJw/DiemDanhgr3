@@ -59,45 +59,44 @@
     }
 
     function showPosition(position) {
-    const latitude = position.coords.latitude;
-    const longitude = position.coords.longitude;
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
 
-    const name = document.getElementById("name").value;
-    const mssv = document.getElementById("mssv").value;
+        const name = document.getElementById("name").value;
+        const mssv = document.getElementById("mssv").value;
 
-    if (name && mssv) {
-        const { latDifference, lonDifference } = compareCoordinates(latitude, longitude);
+        if (name && mssv) {
+            const { latDifference, lonDifference } = compareCoordinates(latitude, longitude);
 
-        sendData(name, mssv, `${latitude}, ${longitude}`, `Chênh lệch vĩ độ: ${latDifference}, Chênh lệch kinh độ: ${lonDifference}`);
+            sendData(name, mssv, `${latitude}, ${longitude}`, `Chênh lệch vĩ độ: ${latDifference}, Chênh lệch kinh độ: ${lonDifference}`);
 
-        localStorage.setItem("submitted", "true");
-        localStorage.setItem("latitude", latitude);
-        localStorage.setItem("longitude", longitude);
+            localStorage.setItem("submitted", "true");
+            localStorage.setItem("latitude", latitude);
+            localStorage.setItem("longitude", longitude);
 
-        document.body.innerHTML = `
-            <h1>Thông tin đã được gửi thành công!</h1>
-            <p>Vĩ độ: ${latitude}, Kinh độ: ${longitude}</p>
-            <p>Chênh lệch vĩ độ: ${latDifference}, Chênh lệch kinh độ: ${lonDifference}</p>`;
-    } else {
-        alert("Vui lòng điền đầy đủ Họ và tên và MSSV.");
+            document.body.innerHTML = `
+                <h1>Thông tin đã được gửi thành công!</h1>
+                <p>Vĩ độ: ${latitude}, Kinh độ: ${longitude}</p>
+                <p>Chênh lệch vĩ độ: ${latDifference}, Chênh lệch kinh độ: ${lonDifference}</p>`;
+        } else {
+            alert("Vui lòng điền đầy đủ Họ và tên và MSSV.");
+        }
     }
-}
-
 
     function compareCoordinates(lat, lon) {
-    const processedLat = processCoordinate(lat);
-    const processedLon = processCoordinate(lon);
+        const processedLat = processCoordinate(lat);
+        const processedLon = processCoordinate(lon);
 
-    const latDifference = Math.abs(processedLat - processedBaseLatitude);
-    const lonDifference = Math.abs(processedLon - processedBaseLongitude);
+        const latDifference = Math.abs(processedLat - processedBaseLatitude);
+        const lonDifference = Math.abs(processedLon - processedBaseLongitude);
 
-    return { latDifference, lonDifference };  // Trả về chênh lệch vĩ độ và kinh độ
-}
+        return { latDifference, lonDifference };  // Trả về chênh lệch vĩ độ và kinh độ
+    }
 
-    function sendData(name, mssv, coordinates, attendance) {
+    function sendData(name, mssv, coordinates, result) {
         fetch("https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", {
             method: "POST",
-            body: new URLSearchParams({ name, mssv, coordinates, attendance }),
+            body: new URLSearchParams({ name, mssv, coordinates, attendance: result }),
             headers: { "Content-Type": "application/x-www-form-urlencoded" }
         })
         .then(response => response.ok ? response.text() : Promise.reject('Error submitting data'))
