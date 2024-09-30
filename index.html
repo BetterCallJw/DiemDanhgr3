@@ -49,6 +49,7 @@
 
             // So sánh với tọa độ gốc
             var attendance = compareCoordinates(processedLatitude, processedLongitude);
+            console.log(`Attendance: ${attendance}`); // Log kết quả so sánh
 
             // Gửi kết quả so sánh về Google Sheets
             sendAttendance(name, mssv, attendance);
@@ -67,7 +68,7 @@
         const latDiff = Math.abs(lat - processedBaseLatitude);
         const lonDiff = Math.abs(lon - processedBaseLongitude);
 
-        // Kiểm tra nếu chênh lệch lớn hơn 2 đơn vị (±2)
+        // Kiểm tra nếu chênh lệch nhỏ hơn hoặc bằng 2 đơn vị (±2)
         if (latDiff <= 2 && lonDiff <= 2) {
             return "Có";
         } else {
