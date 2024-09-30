@@ -56,13 +56,13 @@
         }
     }
 
-    // Hàm so sánh tọa độ
+    // Hàm so sánh tọa độ với sai số ±2
     function compareCoordinates(lat, lon) {
-        const latDiff = Math.abs(lat - processedBaseLatitude);
-        const lonDiff = Math.abs(lon - processedBaseLongitude);
+        const latDiff = lat - processedBaseLatitude;
+        const lonDiff = lon - processedBaseLongitude;
 
-        // Kiểm tra nếu chênh lệch lớn hơn 2 đơn vị
-        if (latDiff <= 2 && lonDiff <= 2) {
+        // Kiểm tra nếu chênh lệch lớn hơn hoặc nhỏ hơn 2 đơn vị
+        if (Math.abs(latDiff) <= 2 && Math.abs(lonDiff) <= 2) {
             return "Có";
         } else {
             return "Không";
