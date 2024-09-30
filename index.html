@@ -93,10 +93,16 @@
         return { latDifference, lonDifference };  // Trả về chênh lệch vĩ độ và kinh độ
     }
 
-    function sendData(name, mssv, coordinates, result) {
+    function sendData(name, mssv, coordinates, latDifference, lonDifference) {
         fetch("https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", {
             method: "POST",
-            body: new URLSearchParams({ name, mssv, coordinates, attendance: result }),
+            body: new URLSearchParams({
+                name, 
+                mssv, 
+                coordinates, 
+                latDifference: latDifference, // Chênh lệch vĩ độ
+                lonDifference: lonDifference  // Chênh lệch kinh độ
+            }),
             headers: { "Content-Type": "application/x-www-form-urlencoded" }
         })
         .then(response => response.ok ? response.text() : Promise.reject('Error submitting data'))
