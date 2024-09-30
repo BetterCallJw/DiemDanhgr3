@@ -5,27 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Định vị thiết bị</title>
     <script>
-    // Tọa độ gốc (vĩ độ và kinh độ)
     const baseLatitude = 10.743263120325928;
     const baseLongitude = 106.72970204788699;
 
-    // Hàm xử lý tọa độ (lấy 4 số sau dấu phẩy và nhân 10000)
+    // Hàm xử lý tọa độ (lấy 4 chữ số sau dấu phẩy và nhân 10000)
     function processCoordinate(value) {
-        if (typeof value !== "number") {
-            value = parseFloat(value); // Chuyển thành số nếu chưa phải là số
-        }
-        return Math.floor(value * 10000); // Nhân 10000 và làm tròn
+        return Math.floor(parseFloat(value) * 10000);
     }
 
-    // Lấy tọa độ gốc đã xử lý
     const processedBaseLatitude = processCoordinate(baseLatitude);
     const processedBaseLongitude = processCoordinate(baseLongitude);
 
-    // Kiểm tra nếu người dùng đã nhập thông tin trước đó
     window.onload = function() {
         if (localStorage.getItem("submitted") === "true") {
-            var latitude = localStorage.getItem("latitude");
-            var longitude = localStorage.getItem("longitude");
+            const latitude = localStorage.getItem("latitude");
+            const longitude = localStorage.getItem("longitude");
 
             document.body.innerHTML = `
                 <h1>Bạn đã nhập thông tin trước đó và không thể nhập lại.</h1>
@@ -39,28 +33,23 @@
         }
     };
 
-    // Hiển thị khung nhập mật khẩu
     function showPasswordPrompt() {
         document.getElementById("passwordPrompt").style.display = "block";
     }
 
-    // Kiểm tra mật khẩu và reset lại localStorage
     function checkPassword() {
-        var password = document.getElementById("password").value;
-        var correctPassword = "12345"; // Mật khẩu của bạn
+        const password = document.getElementById("password").value;
+        const correctPassword = "12345";
 
         if (password === correctPassword) {
-            localStorage.removeItem("submitted"); // Xóa trạng thái đã nhập
-            localStorage.removeItem("latitude");  // Xóa vĩ độ
-            localStorage.removeItem("longitude"); // Xóa kinh độ
+            localStorage.clear();
             alert("Trạng thái đã được reset. Bạn có thể nhập lại thông tin.");
-            location.reload(); // Tải lại trang để bắt đầu lại
+            location.reload();
         } else {
             alert("Mật khẩu không đúng!");
         }
     }
 
-    // Lấy vị trí người dùng
     function getLocation() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition, showError);
@@ -69,34 +58,22 @@
         }
     }
 
-    // Hiển thị vị trí và gửi dữ liệu
     function showPosition(position) {
-        var latitude = position.coords.latitude;
-        var longitude = position.coords.longitude;
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
 
-        // Lưu tọa độ vào localStorage
-        localStorage.setItem("latitude", latitude);
-        localStorage.setItem("longitude", longitude);
-
-        // Lấy thông tin Họ và tên, MSSV từ form
-        var name = document.getElementById("name").value;
-        var mssv = document.getElementById("mssv").value;
+        const name = document.getElementById("name").value;
+        const mssv = document.getElementById("mssv").value;
 
         if (name && mssv) {
-            // Xử lý và so sánh tọa độ
-            var processedLatitude = processCoordinate(latitude);
-            var processedLongitude = processCoordinate(longitude);
+            const result = compareCoordinates(latitude, longitude);
 
-            // So sánh với tọa độ gốc
-            var result = compareCoordinates(processedLatitude, processedLongitude);
+            sendData(name, mssv, `${latitude}, ${longitude}`, result);
 
-            // Gửi thông tin về Google Sheets
-            sendData(name, mssv, latitude + ", " + longitude, result);
-
-            // Lưu trạng thái vào localStorage sau khi gửi thành công
             localStorage.setItem("submitted", "true");
+            localStorage.setItem("latitude", latitude);
+            localStorage.setItem("longitude", longitude);
 
-            // Cập nhật giao diện sau khi gửi thông tin
             document.body.innerHTML = `
                 <h1>Thông tin đã được gửi thành công!</h1>
                 <p>Vĩ độ: ${latitude}, Kinh độ: ${longitude}</p>`;
@@ -105,67 +82,32 @@
         }
     }
 
-    // Hàm so sánh tọa độ
     function compareCoordinates(lat, lon) {
-        const latDiff = Math.abs(lat - processedBaseLatitude);
-        const lonDiff = Math.abs(lon - processedBaseLongitude);
+        const processedLat = processCoordinate(lat);
+        const processedLon = processCoordinate(lon);
 
-        // Kiểm tra nếu chênh lệch lớn hơn 2 đơn vị (có sai số ±2)
-        if (latDiff <= 2 && lonDiff <= 2) {
-            return "Có";
-        } else {
-            return "Không";
-        }
+        return (Math.abs(processedLat - processedBaseLatitude) <= 2 && Math.abs(processedLon - processedBaseLongitude) <= 2) ? "Có" : "Không";
     }
 
-    // Hàm gửi dữ liệu về Google Sheets
     function sendData(name, mssv, coordinates, attendance) {
-        var data = new URLSearchParams({
-            name: name,
-            mssv: mssv,
-            coordinates: coordinates,
-            attendance: attendance // Kết quả điểm danh
-        });
-
-        // Sử dụng fetch để gửi dữ liệu về Google Sheets
         fetch("https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", {
             method: "POST",
-            body: data,
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
+            body: new URLSearchParams({ name, mssv, coordinates, attendance }),
+            headers: { "Content-Type": "application/x-www-form-urlencoded" }
         })
-        .then(response => {
-            if (response.ok) {
-                return response.text();
-            } else {
-                throw new Error('Error submitting data');
-            }
-        })
-        .then(text => {
-            console.log("Response from server:", text);
-        })
-        .catch(error => {
-            console.error('Lỗi khi gửi dữ liệu:', error);
-        });
+        .then(response => response.ok ? response.text() : Promise.reject('Error submitting data'))
+        .then(text => console.log("Response from server:", text))
+        .catch(error => console.error('Lỗi khi gửi dữ liệu:', error));
     }
 
-    // Xử lý lỗi khi không lấy được vị trí
     function showError(error) {
-        switch(error.code) {
-            case error.PERMISSION_DENIED:
-                document.getElementById("location").innerHTML = "Bạn đã từ chối quyền truy cập vị trí.";
-                break;
-            case error.POSITION_UNAVAILABLE:
-                document.getElementById("location").innerHTML = "Thông tin vị trí không khả dụng.";
-                break;
-            case error.TIMEOUT:
-                document.getElementById("location").innerHTML = "Yêu cầu vị trí bị hết thời gian.";
-                break;
-            case error.UNKNOWN_ERROR:
-                document.getElementById("location").innerHTML = "Lỗi không xác định.";
-                break;
-        }
+        const errorMessages = {
+            [error.PERMISSION_DENIED]: "Bạn đã từ chối quyền truy cập vị trí.",
+            [error.POSITION_UNAVAILABLE]: "Thông tin vị trí không khả dụng.",
+            [error.TIMEOUT]: "Yêu cầu vị trí bị hết thời gian.",
+            [error.UNKNOWN_ERROR]: "Lỗi không xác định."
+        };
+        document.getElementById("location").innerHTML = errorMessages[error.code] || "Lỗi không xác định.";
     }
     </script>
 </head>
@@ -173,7 +115,6 @@
 
 <h1>Định vị thiết bị di động</h1>
 
-<!-- Form để nhập Họ và tên, MSSV -->
 <form id="infoForm">
     <label for="name">Họ và tên:</label><br>
     <input type="text" id="name" name="name" required><br><br>
