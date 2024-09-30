@@ -76,7 +76,12 @@
             // Cập nhật giao diện sau khi gửi thông tin
             document.body.innerHTML = `
                 <h1>Thông tin đã được gửi thành công!</h1>
-                <p>Vĩ độ: ${latitude}, Kinh độ: ${longitude}</p>`;
+                <p>Vĩ độ: ${latitude}, Kinh độ: ${longitude}</p>
+                <h2>So sánh với tọa độ góc:</h2>
+                <p id="comparison"></p>`;
+            
+            // So sánh với tọa độ góc
+            compareWithCornerCoordinates(latitude, longitude);
         } else {
             alert("Vui lòng điền đầy đủ Họ và tên và MSSV.");
         }
@@ -111,6 +116,42 @@
         .catch(error => {
             console.error('Lỗi khi gửi dữ liệu:', error);
         });
+    }
+
+    // Tọa độ góc
+    const cornerCoordinates = [
+        {lat: 10.762622, lon: 106.660172}, // Ví dụ: Tọa độ góc 1
+        {lat: 10.776889, lon: 106.700981}, // Ví dụ: Tọa độ góc 2
+        // Thêm tọa độ góc khác ở đây
+    ];
+
+    // So sánh tọa độ hiện tại với các tọa độ góc
+    function compareWithCornerCoordinates(latitude, longitude) {
+        let closestCorner = null;
+        let minDistance = Infinity;
+
+        cornerCoordinates.forEach(corner => {
+            let distance = calculateDistance(latitude, longitude, corner.lat, corner.lon);
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestCorner = corner;
+            }
+        });
+
+        document.getElementById("comparison").innerHTML = `Tọa độ gần nhất: Vĩ độ: ${closestCorner.lat}, Kinh độ: ${closestCorner.lon}, Khoảng cách: ${minDistance.toFixed(2)} km`;
+    }
+
+    // Tính khoảng cách giữa hai tọa độ
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Bán kính trái đất (km)
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = 
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c; // Khoảng cách theo km
     }
 
     // Xử lý lỗi khi không lấy được vị trí
