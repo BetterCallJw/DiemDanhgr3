@@ -11,6 +11,9 @@
 
     // Hàm xử lý tọa độ (lấy 4 số sau dấu phẩy và nhân 10000)
     function processCoordinate(value) {
+        if (typeof value !== "number") {
+            value = parseFloat(value); // Chuyển thành số nếu chưa phải là số
+        }
         return Math.floor(value * 10000); // Nhân 10000 và làm tròn
     }
 
@@ -56,12 +59,12 @@
         }
     }
 
-    // Hàm so sánh tọa độ
+    // Hàm so sánh tọa độ với sai số không lớn hơn 2
     function compareCoordinates(lat, lon) {
         const latDiff = Math.abs(lat - processedBaseLatitude);
         const lonDiff = Math.abs(lon - processedBaseLongitude);
 
-        // Kiểm tra nếu chênh lệch lớn hơn 2 đơn vị
+        // Kiểm tra nếu chênh lệch không lớn hơn 2 đơn vị
         if (latDiff <= 2 && lonDiff <= 2) {
             return "Có";
         } else {
