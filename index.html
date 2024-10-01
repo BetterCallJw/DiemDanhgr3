@@ -8,7 +8,7 @@
     const baseLatitude = 10.731857;
     const baseLongitude = 106.699035;
 
-    // Hàm xử lý tọa độ (lấy 4 chữ số sau dấu phẩy và nhân 10000)
+    // Hàm xử lý tọa độ (lấy 4 chữ số sau dấu phẩy bằng cách nhân cho 10000)
     function processCoordinate(value) {
         return Math.floor(parseFloat(value) * 10000);
     }
@@ -90,7 +90,7 @@
         const latDifference = Math.abs(processedLat - processedBaseLatitude);
         const lonDifference = Math.abs(processedLon - processedBaseLongitude);
 
-        return { latDifference, lonDifference };  // Trả về chênh lệch vĩ độ và kinh độ
+        return { latDifference, lonDifference };
     }
 
     function sendData(name, mssv, coordinates, latDifference, lonDifference) {
@@ -100,8 +100,8 @@
                 name: name,
                 mssv: mssv,
                 coordinates: coordinates,
-                latDifference: latDifference.toString(),  // Chênh lệch vĩ độ
-                lonDifference: lonDifference.toString()   // Chênh lệch kinh độ
+                latDifference: latDifference.toString(),
+                lonDifference: lonDifference.toString()
             }),
             headers: { "Content-Type": "application/x-www-form-urlencoded" }
         })
