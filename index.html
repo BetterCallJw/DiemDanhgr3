@@ -97,18 +97,18 @@
         fetch("https://script.google.com/macros/s/AKfycbzVktM1TS1nezvY2_NpDDhtacDFgl09H_xavSMaN537DzCY1lfPNhv9kLB1pW6bjokZ/exec", {
             method: "POST",
             body: new URLSearchParams({
-                name, 
-                mssv, 
-                coordinates, 
-                latDifference, // Chênh lệch vĩ độ
-                lonDifference  // Chênh lệch kinh độ
+                name: name,
+                mssv: mssv,
+                coordinates: coordinates,
+                latDifference: latDifference.toString(),  // Chênh lệch vĩ độ
+                lonDifference: lonDifference.toString()   // Chênh lệch kinh độ
             }),
             headers: { "Content-Type": "application/x-www-form-urlencoded" }
         })
         .then(response => response.ok ? response.text() : Promise.reject('Error submitting data'))
         .then(text => console.log("Response from server:", text))
         .catch(error => console.error('Lỗi khi gửi dữ liệu:', error));
-    }
+     }
 
     function showError(error) {
         const errorMessages = {
