@@ -68,7 +68,7 @@
         if (name && mssv) {
             const { latDifference, lonDifference } = compareCoordinates(latitude, longitude);
 
-            sendData(name, mssv, `${latitude}, ${longitude}`, `Chênh lệch vĩ độ: ${latDifference}, Chênh lệch kinh độ: ${lonDifference}`);
+            sendData(name, mssv, `${latitude}, ${longitude}`, latDifference, lonDifference);
 
             localStorage.setItem("submitted", "true");
             localStorage.setItem("latitude", latitude);
@@ -93,15 +93,15 @@
         return { latDifference, lonDifference };  // Trả về chênh lệch vĩ độ và kinh độ
     }
 
-    function sendData(name, mssv, coordinates, ${latDifference}, ${lonDifference}) {
+    function sendData(name, mssv, coordinates, latDifference, lonDifference) {
         fetch("https://script.google.com/macros/s/AKfycby3B2rDdhzrgvhWRJYG6x5bYP0XDzjf91h0mNchzbdabY4646sCoMEI9Fj5qbEUtcfi/exec", {
             method: "POST",
             body: new URLSearchParams({
                 name, 
                 mssv, 
                 coordinates, 
-                ${latDifference}, // Chênh lệch vĩ độ
-                ${lonDifference}  // Chênh lệch kinh độ
+                latDifference, // Chênh lệch vĩ độ
+                lonDifference  // Chênh lệch kinh độ
             }),
             headers: { "Content-Type": "application/x-www-form-urlencoded" }
         })
