@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Định vị thiết bị</title>
     <script>
-    // Tọa độ gốc
+    // Tọa độ gốc (thay đổi nếu chủ host muốn)
     const baseLatitude = 10.731857;
     const baseLongitude = 106.699035;
 
-    // Hàm xử lý tọa độ (giữ 4 chữ số sau dấu phẩy)
+    // Hàm xử lý tọa độ (lấy 4 số sau dấu)
     function processCoordinate(value) {
         return Math.floor(parseFloat(value) * 10000);
     }
@@ -17,9 +17,9 @@
     const processedBaseLatitude = processCoordinate(baseLatitude);
     const processedBaseLongitude = processCoordinate(baseLongitude);
 
-    // Khi trang đang load
+    // Load trang
     window.onload = function() {
-        // Kiểm tra nếu thông tin đã được nhập trước đó
+        // Ktra thông tin nếu đã được nhập trước đó
         if (localStorage.getItem("submitted") === "true") {
             const latitude = localStorage.getItem("latitude");
             const longitude = localStorage.getItem("longitude");
@@ -36,12 +36,12 @@
         }
     };
 
-    // Ô nhập mật khẩu
+    // Nhập pass
     function showPasswordPrompt() {
         document.getElementById("passwordPrompt").style.display = "block";
     }
 
-    // Kiểm tra mật khẩu để reset thông tin
+    // Check pass
     function checkPassword() {
         const password = document.getElementById("password").value;
         const correctPassword = "12345";
@@ -49,7 +49,7 @@
         if (password === correctPassword) {
             localStorage.clear();
             alert("Trạng thái đã được reset. Bạn có thể nhập lại thông tin.");
-            location.reload();  // Reload trang
+            location.reload();  // Reload web
         } else {
             alert("Mật khẩu không đúng!");
         }
@@ -72,7 +72,7 @@
         const name = document.getElementById("name").value;
         const mssv = document.getElementById("mssv").value;
 
-        // Kiểm tra nhập đủ thông tin chưa
+        // Ktra nhập đủ thông tin chưa
         if (name && mssv) {
             const { latDifference, lonDifference } = compareCoordinates(latitude, longitude);
 
