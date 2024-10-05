@@ -21,7 +21,7 @@
     };
 
     function checkGlobalResetStatus() {
-        fetch('https://script.google.com/macros/s/YOUR_DEPLOYED_URL/exec?action=checkResetStatus')
+        fetch('https://script.google.com/macros/s/AKfycbzVktM1TS1nezvY2_NpDDhtacDFgl09H_xavSMaN537DzCY1lfPNhv9kLB1pW6bjokZ/exec')
         .then(response => response.json())
         .then(data => {
             if (data.reset === "true") {
